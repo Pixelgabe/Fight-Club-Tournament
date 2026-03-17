@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fight Club Tournament</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --fg: #e0e0e0;
+            --accent: #ffd700;
+            --danger: #ff4500;
+            --highlight: #00ced1;
+            --card: #1e1e1e;
+        }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: min(1200px, 100%);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: clamp(1.8rem, 3vw, 3.5rem);
+            margin-bottom: 8px;
+        }
+        p.subtitle {
+            color: var(--highlight);
+            text-align: center;
+            margin-top: 0;
+        }
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            color: var(--fg);
+            background: var(--card);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+        }
+        .arena {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 420px;
+            margin-bottom: 18px;
+            flex-wrap: nowrap; /* keep side‑by‑side */
+            max-width: 1200px;
+        }
+        .fighter {
+            border: 2px solid var(--card);
+            background: var(--card);
+            border-radius: 14px;
+            padding: 10px;
+            width: clamp(360px, 44vw, 560px); /* bigger head-to-head images */
+            text-align: center;
+        }
+        .fighter img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,.5);
+            cursor: pointer;
+        }
+        .fighter h3 {
+            margin: 10px 0 6px;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+        .status {
+            margin: 6px auto 12px;
+            text-align: center;
+            color: var(--fg);
+        }
+        .thumbnails {
+            position: sticky; /* stay at bottom */
+            bottom: 0;
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px;
+            background: #0e0e0e;
+            border-radius: 10px;
+            border: 1px solid #2b2b2b;
+            margin-bottom: 18px;
+        }
+        .thumbnails img { height: 70px; border-radius: 6px; object-fit: cover; }
+        .champion {
+            text-align: center;
+            margin-top: 22px;
+        }
+        .champion h2 { color: var(--accent); margin: 6px 0; }
+        .champion img {
+            width: 100%;
+            height: auto;
+            max-width: none;
+            border-radius: 12px;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fight Club Tournament</h1>
+        <div class="control-panel">
+            <input type="file" id="imageInput" multiple accept="image/*" />
+        </div>
+
+        <div class="status" id="statusText">Upload 4+ images to begin.</div>
+
+        <div class="champion hidden" id="champion">
+            <h2>🏆 Champion 🏆</h2>
+            <img id="championImage" src="" alt="Champion" />
+            <p id="championText"></p>
+        </div>
+
+        <div class="arena" id="arena"></div>
+
+        <div class="thumbnails" id="thumbs"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const arena = document.getElementById('arena');
+        const thumbs = document.getElementById('thumbs');
+        const statusText = document.getElementById('statusText');
+        const championSection = document.getElementById('champion');
+        const championImage = document.getElementById('championImage');
+        const championText = document.getElementById('championText');
+
+        let players = [];
+        let currentMatch = 0;
+        let winners = [];
+        let round = 1;
+
+        function getRoundName(size) {
+            if (size === 2) return 'FINAL!';
+            if (size === 4) return 'Semifinals';
+            if (size === 8) return 'Quarterfinals';
+            return `Round ${round}`;
+        }
+
+        function shuffle(a) { for (let i=a.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+        function renderThumbnails() {
+            thumbs.innerHTML = '';
+            players.forEach((p, i) => {
+                const img = document.createElement('img');
+                img.src = p.src;
+                img.title = `Player ${i+1}`;
+                thumbs.appendChild(img);
+            });
+        }
+
+        function renderMatch() {
+            arena.innerHTML = '';
+            championSection.classList.add('hidden');
+
+            if (players.length === 0) {
+                statusText.textContent = 'Upload images to start the tournament.';
+                return;
+            }
+
+            if (players.length === 1) {
+                const winner = players[0];
+                statusText.textContent = 'Tournament over!';
+                championSection.classList.remove('hidden');
+                championImage.src = winner.src;
+                championText.textContent = `Champion by Victory: ${winner.name}`;
+                renderThumbnails(); // show remaining images list (just the winner)
+                return;
+            }
+
+            if (currentMatch >= players.length - 1) {
+                // Build next round
+                if (players.length % 2 === 1) {
+                    const carry = players.pop();
+                    winners.push(carry);
+                }
+                players = winners;
+                winners = [];
+                currentMatch = 0;
+                round += 1;
+                renderThumbnails(); // Update thumbnails for new round
+                statusText.textContent = getRoundName(players.length);
+                setTimeout(renderMatch, 600);
+                return;
+            }
+
+            const left = players[currentMatch];
+            const right = players[currentMatch+1];
+
+            statusText.textContent = `${getRoundName(players.length)}: Match ${Math.floor(currentMatch/2)+1} of ${Math.ceil(players.length/2)}`;
+
+            [left, right].forEach((contestant) => {
+                const card = document.createElement('article');
+                card.classList.add('fighter');
+
+                const title = document.createElement('h3');
+                title.textContent = contestant.name;
+                card.appendChild(title);
+
+                const img = document.createElement('img');
+                img.src = contestant.src;
+                img.alt = contestant.name;
+                img.addEventListener('click', () => {
+                    winners.push(contestant);
+                    currentMatch += 2;
+                    renderMatch();
+                });
+                card.appendChild(img);
+
+                arena.appendChild(card);
+            });
+        }
+
+        imageInput.addEventListener('change', (event) => {
+            const files = [...event.target.files];
+            if (files.length < 2) {
+                statusText.textContent = 'Select at least 2 images.';
+                return;
+            }
+            players = [];
+            const readers = files.map(file => new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve({ name: file.name, src: e.target.result });
+                reader.readAsDataURL(file);
+            }));
+            Promise.all(readers).then(results => {
+                players = results;
+                shuffle(players);
+                currentMatch = 0;
+                winners = [];
+                round = 1;
+                renderThumbnails();
+                renderMatch();
+                imageInput.style.display = 'none'; // Hide the input after loading
+            });
+        });
+    </script>
+</body>
+</html>
