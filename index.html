@@ -1,143 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fight Club Tournament</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #121212;
-            --fg: #e0e0e0;
-            --accent: #ffd700;
-            --danger: #ff4500;
-            --highlight: #00ced1;
-            --card: #1e1e1e;
+            --bg: #f8f9fa;
+            --fg: #202124;
+            --fg-secondary: #5f6368;
+            --primary: #e8391a;
+            --primary-hover: #1b66c9;
+            --card: #ffffff;
+            --shadow-1: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+            --shadow-2: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+            --radius-card: 12px;
+            --radius-button: 50px;
         }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #202124;
+                --fg: #e8eaed;
+                --fg-secondary: #9aa0a6;
+                --primary: #e8391a;
+                --primary-hover: #aecbfa;
+                --card: #292a2d;
+                --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+                --shadow-2: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+                color-scheme: dark;
+            }
+        }
+
         body {
             margin: 0;
-            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
             background: var(--bg);
             color: var(--fg);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            width: min(1200px, 100%);
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            font-size: clamp(1.8rem, 3vw, 3.5rem);
-            margin-bottom: 8px;
-        }
-        p.subtitle {
-            color: var(--highlight);
-            text-align: center;
-            margin-top: 0;
-        }
-        .control-panel {
+
+        .header {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--card);
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3);
             display: flex;
-            gap: 10px;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        input[type="file"] {
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .header-icon {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 500;
             color: var(--fg);
-            background: var(--card);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
-            cursor: pointer;
+            letter-spacing: -0.5px;
         }
+
+        .container {
+            width: 100%;
+            max-width: 2400px;
+            padding: 0 24px 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .control-panel {
+            margin-bottom: 24px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 16px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            width: clamp(300px, 80vw, 800px);
+            height: auto;
+            max-height: 75vh;
+            object-fit: contain;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status:empty {
+            display: none;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-upload-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 20px 48px;
+            font-size: 1.25rem;
+            font-weight: 500;
+            border-radius: var(--radius-button);
+            cursor: pointer;
+            box-shadow: var(--shadow-1);
+            transition: background 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-upload-btn:hover {
+            background: var(--primary-hover);
+            box-shadow: var(--shadow-2);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .status {
+            font-size: 1.125rem;
+            color: var(--fg-secondary);
+            margin-bottom: 16px;
+            font-weight: 500;
+            text-align: center;
+            background: var(--card);
+            padding: 12px 24px;
+            border-radius: var(--radius-button);
+            box-shadow: var(--shadow-1);
+        }
+
         .arena {
             display: flex;
-            gap: 20px;
+            gap: 32px;
             justify-content: center;
             align-items: center;
-            min-height: 420px;
-            margin-bottom: 18px;
-            flex-wrap: nowrap; /* keep side‑by‑side */
-            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 40px;
+            flex-wrap: nowrap;
         }
+
         .fighter {
-            border: 2px solid var(--card);
             background: var(--card);
-            border-radius: 14px;
-            padding: 10px;
-            width: clamp(360px, 44vw, 560px); /* bigger head-to-head images */
+            border-radius: var(--radius-card);
+            padding: 24px;
+            flex: 1;
+            min-width: 0;
             text-align: center;
+            box-shadow: var(--shadow-1);
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .fighter:hover {
+            box-shadow: var(--shadow-2);
+            transform: translateY(-4px);
+        }
+
         .fighter img {
             width: 100%;
-            height: auto;
+            height: clamp(300px, 70vh, 1200px);
             object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,.5);
-            cursor: pointer;
+            border-radius: 12px;
+            background: var(--bg);
+            margin-bottom: 20px;
         }
+
         .fighter h3 {
-            margin: 10px 0 6px;
-            font-size: 1.1rem;
-            color: var(--accent);
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #444140;
+            line-height: 1.4;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            opacity: 0.8;
         }
-        .status {
-            margin: 6px auto 12px;
-            text-align: center;
-            color: var(--fg);
+
+        .fighter-label {
+            color: var(--fg-secondary);
+            font-size: 0.875rem;
+            margin-top: 8px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
+
         .thumbnails {
-            position: sticky; /* stay at bottom */
-            bottom: 0;
+            position: sticky;
+            bottom: 24px;
             display: flex;
             overflow-x: auto;
-            gap: 8px;
-            padding: 8px;
-            background: #0e0e0e;
-            border-radius: 10px;
-            border: 1px solid #2b2b2b;
-            margin-bottom: 18px;
+            gap: 16px;
+            padding: 16px 24px;
+            background: var(--card);
+            border-radius: var(--radius-button);
+            box-shadow: var(--shadow-2);
+            margin-top: auto;
+            max-width: 90vw;
+            box-sizing: border-box;
+            align-items: center;
         }
-        .thumbnails img { height: 70px; border-radius: 6px; object-fit: cover; }
+
+        .thumbnails::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .thumbnails::-webkit-scrollbar-thumb {
+            background: var(--fg-secondary);
+            border-radius: 4px;
+        }
+
+        .thumbnails img {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.2s;
+        }
+
+        .thumbnails img:hover {
+            transform: scale(1.1);
+        }
+
         .champion {
             text-align: center;
-            margin-top: 22px;
+            background: var(--card);
+            padding: 40px;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-2);
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .champion h2 { color: var(--accent); margin: 6px 0; }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .champion h2 {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
         .champion img {
             width: 100%;
-            height: auto;
-            max-width: none;
-            border-radius: 12px;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: var(--bg);
         }
-        .hidden { display: none !important; }
+
+        .champion p {
+            font-size: 1.5rem;
+            color: var(--fg);
+            margin-top: 24px;
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .vs-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: var(--primary);
+            border-radius: 50%;
+            color: #292a2d;
+            font-weight: 700;
+            font-size: 1.125rem;
+            box-shadow: inset var(--shadow-1);
+            margin: 0 -16px;
+            z-index: 1;
+        }
+
+        @media (max-width: 850px) {
+            .vs-indicator {
+                margin: 16px 0;
+            }
+        }
     </style>
 </head>
+
 <body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Fight Club Tournament</h1>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Fight Club Tournament</h1>
-        <div class="control-panel">
-            <input type="file" id="imageInput" multiple accept="image/*" />
+        <div id="logoContainer" class="logo-container">
+            <img src="fightclub-logo.png" alt="Fight Club Logo" />
         </div>
 
-        <div class="status" id="statusText">Upload 4+ images to begin.</div>
+        <div class="control-panel">
+            <div class="file-upload-wrapper" id="uploadWrapper">
+                <button class="file-upload-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    LET THEM FIGHT
+                </button>
+                <input type="file" id="imageInput" multiple accept="image/*" />
+            </div>
+        </div>
+
+        <div class="status" id="statusText"></div>
 
         <div class="champion hidden" id="champion">
-            <h2>🏆 Champion 🏆</h2>
+            <h2>🏆 Champion</h2>
             <img id="championImage" src="" alt="Champion" />
             <p id="championText"></p>
         </div>
 
         <div class="arena" id="arena"></div>
 
-        <div class="thumbnails" id="thumbs"></div>
+        <div class="thumbnails hidden" id="thumbs"></div>
     </div>
 
     <script>
         const imageInput = document.getElementById('imageInput');
+        const uploadWrapper = document.getElementById('uploadWrapper');
         const arena = document.getElementById('arena');
         const thumbs = document.getElementById('thumbs');
         const statusText = document.getElementById('statusText');
@@ -151,22 +416,27 @@
         let round = 1;
 
         function getRoundName(size) {
-            if (size === 2) return 'FINAL!';
+            if (size === 2) return 'Final Match';
             if (size === 4) return 'Semifinals';
             if (size === 8) return 'Quarterfinals';
             return `Round ${round}`;
         }
 
-        function shuffle(a) { for (let i=a.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } }
 
         function renderThumbnails() {
             thumbs.innerHTML = '';
-            players.forEach((p, i) => {
-                const img = document.createElement('img');
-                img.src = p.src;
-                img.title = `Player ${i+1}`;
-                thumbs.appendChild(img);
-            });
+            if (players.length > 0) {
+                thumbs.classList.remove('hidden');
+                players.forEach((p, i) => {
+                    const img = document.createElement('img');
+                    img.src = p.src;
+                    img.title = `Player ${i + 1}`;
+                    thumbs.appendChild(img);
+                });
+            } else {
+                thumbs.classList.add('hidden');
+            }
         }
 
         function renderMatch() {
@@ -180,54 +450,65 @@
 
             if (players.length === 1) {
                 const winner = players[0];
-                statusText.textContent = 'Tournament over!';
+                statusText.textContent = 'Tournament Complete';
+                statusText.style.color = 'var(--primary)';
                 championSection.classList.remove('hidden');
                 championImage.src = winner.src;
-                championText.textContent = `Champion by Victory: ${winner.name}`;
-                renderThumbnails(); // show remaining images list (just the winner)
+                championText.textContent = winner.name;
+                renderThumbnails();
                 return;
             }
 
             if (currentMatch >= players.length - 1) {
-                // Build next round
                 if (players.length % 2 === 1) {
                     const carry = players.pop();
-                    winners.push(carry);
+                    winners.unshift(carry);
                 }
                 players = winners;
                 winners = [];
                 currentMatch = 0;
                 round += 1;
-                renderThumbnails(); // Update thumbnails for new round
+                renderThumbnails();
                 statusText.textContent = getRoundName(players.length);
-                setTimeout(renderMatch, 600);
+                setTimeout(renderMatch, 400);
                 return;
             }
 
             const left = players[currentMatch];
-            const right = players[currentMatch+1];
+            const right = players[currentMatch + 1];
 
-            statusText.textContent = `${getRoundName(players.length)}: Match ${Math.floor(currentMatch/2)+1} of ${Math.ceil(players.length/2)}`;
+            statusText.textContent = `${getRoundName(players.length)}`;
 
-            [left, right].forEach((contestant) => {
-                const card = document.createElement('article');
+            [left, right].forEach((contestant, index) => {
+                const card = document.createElement('div');
                 card.classList.add('fighter');
-
-                const title = document.createElement('h3');
-                title.textContent = contestant.name;
-                card.appendChild(title);
 
                 const img = document.createElement('img');
                 img.src = contestant.src;
                 img.alt = contestant.name;
-                img.addEventListener('click', () => {
+
+                const title = document.createElement('h3');
+                title.textContent = contestant.name;
+
+                card.appendChild(img);
+                card.appendChild(title);
+
+                card.addEventListener('click', () => {
                     winners.push(contestant);
                     currentMatch += 2;
-                    renderMatch();
+                    // Add slight scale down effect on click
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(renderMatch, 150);
                 });
-                card.appendChild(img);
 
                 arena.appendChild(card);
+
+                if (index === 0) {
+                    const vs = document.createElement('div');
+                    vs.classList.add('vs-indicator');
+                    vs.textContent = 'VS';
+                    arena.appendChild(vs);
+                }
             });
         }
 
@@ -237,12 +518,19 @@
                 statusText.textContent = 'Select at least 2 images.';
                 return;
             }
+
+            const logoContainer = document.getElementById('logoContainer');
+            if (logoContainer) logoContainer.classList.add('hidden');
+            const controlPanel = document.querySelector('.control-panel');
+            if (controlPanel) controlPanel.classList.add('hidden');
+
             players = [];
             const readers = files.map(file => new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onload = e => resolve({ name: file.name, src: e.target.result });
+                reader.onload = e => resolve({ name: file.name.split('.')[0], src: e.target.result });
                 reader.readAsDataURL(file);
             }));
+
             Promise.all(readers).then(results => {
                 players = results;
                 shuffle(players);
@@ -251,9 +539,10 @@
                 round = 1;
                 renderThumbnails();
                 renderMatch();
-                imageInput.style.display = 'none'; // Hide the input after loading
+                uploadWrapper.style.display = 'none';
             });
         });
     </script>
 </body>
+
 </html>
