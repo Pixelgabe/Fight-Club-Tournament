@@ -1,6 +1,6 @@
 # Fight Club Tournament
 
-A fun, interactive web-based tournament app inspired by the movie *Fight Club*. Pit your favorite images against each other in a single-elimination bracket to determine the ultimate champion!
+Pit your favorite images against each other in a single-elimination bracket to determine the ultimate champion!
 
 <a href="https://pixelgabe.github.io/Fight-Club-Tournament/" target="_blank"><button style="padding: 12px 24px; background-color: #e8391a; color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 20px 0;">Try It Now</button></a>
 
