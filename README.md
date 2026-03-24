@@ -8,7 +8,6 @@ A fun, interactive web-based tournament app inspired by the movie *Fight Club*. 
 
 - **Upload Images**: Select multiple images (fighters, memes, characters, etc.) to compete in the tournament.
 - **Single-Elimination Bracket**: Automatic round progression from quarterfinals to the final match.
-- **Interactive Voting**: Click on the image you think should win each head-to-head matchup.
 - **Visual Feedback**: See thumbnails of all participants and track the champion.
 - **Responsive Design**: Works on desktop and mobile devices with a dark theme.
 
